@@ -5,7 +5,7 @@ const cors = require('cors');
 
 const app = express();
 app.use(cors(
-  {origin: process.env.BACKEND_URL || 'http://localhost:5173', credentials: true}
+  {origin: 'https://debosmita-portfolio.vercel.app', credentials: true}
 ));
 app.use(express.json());
 
