@@ -1,16 +1,23 @@
 require('dotenv').config();
+
 const express = require('express');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
 
 const app = express();
-app.use(cors(
-  {origin: 'https://debosmita-portfolio.vercel.app', credentials: true}
-));
+
+// Update CORS configuration to allow frontend origin
+app.use(cors({
+  origin: process.env.BACKEND_URL || 'https://debosmita-portfolio.vercel.app',
+   // Set to your frontend deployment URL
+  credentials: true,
+}));
+
 app.use(express.json());
 
 app.post('/contact', async (req, res) => {
   const { first_name, last_name, email, phone, message } = req.body;
+
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
@@ -21,19 +28,23 @@ app.post('/contact', async (req, res) => {
       },
       secure: false,
     });
+
     await transporter.sendMail({
       from: `"${first_name} ${last_name}" <${email}>`,
-      to: process.env.EMAIL_USER, // your receiving email
+      to: process.env.EMAIL_USER, // Your receiving email
       subject: `Contact Form | message from ${first_name} ${last_name}`,
       text: `Name: ${first_name} ${last_name}\nEmail: ${email}\nPhone: ${phone}\nMessage:\n${message}`,
     });
+
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-app.listen(5000, () => {
-  console.log('Server started on port 5000');
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
+
 module.exports = app;
