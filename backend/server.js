@@ -6,15 +6,24 @@ const cors = require('cors');
 
 const app = express();
 
-// Update CORS configuration to allow frontend origin
-app.use(cors({
-  origin: process.env.BACKEND_URL || 'https://debosmita-portfolio.vercel.app',
-   // Set to your frontend deployment URL
+// Configure CORS with specific options
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || 'https://debosmita-portfolio.vercel.app',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
-}));
+};
 
+// Apply CORS middleware
+app.use(cors(corsOptions));
+
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Parse JSON bodies
 app.use(express.json());
 
+// Contact form endpoint
 app.post('/contact', async (req, res) => {
   const { first_name, last_name, email, phone, message } = req.body;
 
@@ -31,7 +40,7 @@ app.post('/contact', async (req, res) => {
 
     await transporter.sendMail({
       from: `"${first_name} ${last_name}" <${email}>`,
-      to: process.env.EMAIL_USER, // Your receiving email
+      to: process.env.EMAIL_USER,
       subject: `Contact Form | message from ${first_name} ${last_name}`,
       text: `Name: ${first_name} ${last_name}\nEmail: ${email}\nPhone: ${phone}\nMessage:\n${message}`,
     });
