@@ -1,0 +1,9 @@
+@import "tailwindcss";
+/* @import "tailwindcss/preflight";
+@tailwind utilities; */
+body{
+    background-color: black;
+}
+html {
+  scroll-behavior: smooth;
+}
